@@ -1,33 +1,53 @@
 import Link from 'next/Link'
 import { toJson } from 'unsplash-js'
+import { useState, useEffect } from 'react'
+
 import ImageClient from '../image-client'
-import { useState } from 'react'
+import { randomLetter } from '../utils'
 
 export default function startsWithLetter() {
   const [images, setImages] = useState(null)
 
-  ImageClient.search
-    .photos('umbrella')
-    .then(toJson)
-    .then((response) => {
-      setImages(response.results)
-    })
+  const rl = randomLetter()
+
+  const [started, setStarted] = useState(false)
+  const [loading, setLoading] = useState(false)
+
+  const loadImages = () => {
+    setLoading(true)
+    setStarted(true)
+
+    ImageClient.search
+      .photos('umbrella')
+      .then(toJson)
+      .then((response) => {
+        setImages(response.results)
+        setLoading(false)
+      })
+  }
 
   return (
-    <>
-      <h1>Exercises: Find all the images starting with letter</h1>
+    <div className="paper container">
+      <h2>Activities: Find all the images starting with letter "{rl}"</h2>
 
-      {images && (
+      {loading && <h4>Loading</h4>}
+
+      {images && started ? (
         <ul>
           {images.map((i) => (
             <img src={i.urls.thumb} />
           ))}
         </ul>
+      ) : (
+        <h4>Press "Start Game" to begin</h4>
       )}
 
+      <button onClick={() => loadImages()}>Start Game</button>
+
+      <hr />
       <Link href="/">
         <a>Home</a>
       </Link>
-    </>
+    </div>
   )
 }
