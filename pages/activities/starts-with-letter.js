@@ -8,7 +8,7 @@ import { randomLetter } from '../utils'
 export default function startsWithLetter() {
   const [images, setImages] = useState(null)
 
-  const rl = randomLetter()
+  const RANDOM_LETTER = randomLetter()
 
   const [started, setStarted] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -28,7 +28,9 @@ export default function startsWithLetter() {
 
   return (
     <div className="paper container">
-      <h2>Activities: Find all the images starting with letter "{rl}"</h2>
+      <h2>
+        Activities: Find all the images starting with letter "{RANDOM_LETTER}"
+      </h2>
 
       {loading && <h4>Loading</h4>}
 
