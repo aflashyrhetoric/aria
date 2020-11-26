@@ -1,12 +1,20 @@
 import Head from 'next/head'
 import Link from 'next/Link'
+import { useState, useEffect } from 'react'
 
 export default function Home() {
+  const [users, setUsers] = useState([])
+
+  useEffect(() => {
+    fetch('http://localhost:3000/api/users')
+      .then((res) => res.json())
+      .then((res) => setUsers(res))
+  }, [])
+
   return (
     <div className="container">
       <Head>
         <title>Create Next App</title>
-        <link rel="icon" href="/favicon.ico" />
       </Head>
 
       <main>
@@ -21,6 +29,15 @@ export default function Home() {
         <p className="description">
           Get started by editing <code>pages/index.js</code>
         </p>
+
+        {users.length > 0 && (
+          <>
+            {users.map((u) => (
+              <p>{u.name}</p>
+            ))}
+          </>
+        )}
+        <link rel="icon" href="/favicon.ico" />
 
         <div className="grid">
           <a href="https://nextjs.org/docs" className="card">
