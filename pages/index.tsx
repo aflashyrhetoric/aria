@@ -1,12 +1,14 @@
 import Head from 'next/head'
 import Link from 'next/Link'
 import { useState, useEffect } from 'react'
+import { getAllUsers } from './api/api-helpers'
+import { User } from '.prisma/client'
 
 export default function Home() {
-  const [users, setUsers] = useState([])
+  const [users, setUsers] = useState<User[]>([])
 
   useEffect(() => {
-    fetch('http://localhost:3000/api/users')
+    getAllUsers()
       .then((res) => res.json())
       .then((res) => setUsers(res))
   }, [])
@@ -33,7 +35,10 @@ export default function Home() {
         {users.length > 0 && (
           <>
             {users.map((u) => (
-              <p>{u.name}</p>
+              <>
+                <p>Name: {u.name}</p>
+                <p>Email: {u.email}</p>
+              </>
             ))}
           </>
         )}
