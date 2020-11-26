@@ -23,10 +23,6 @@ export default function Home() {
       </Head>
 
       <main>
-        {/* <Link href="/exercises/fill-in-the-blank">
-          <a>Fill In The Blank</a>
-        </Link> */}
-
         {users.length > 0 && (
           <>
             {users.map((u) => (
