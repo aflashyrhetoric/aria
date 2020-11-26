@@ -7,27 +7,149 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Post {
-  id        Int      @id @default(autoincrement())
-  title     String
-  createdAt DateTime @default(now())
-  content   String?
-  published Boolean  @default(false)
-  authorId  Int
-  author    User     @relation(fields: [authorId], references: [id])
-}
-
-model Profile {
-  id     Int     @id @default(autoincrement())
-  bio    String?
-  userId Int     @unique
-  user   User    @relation(fields: [userId], references: [id])
-}
-
 model User {
-  id      Int      @id @default(autoincrement())
-  name    String?
-  email   String   @unique
-  posts   Post[]
-  profile Profile?
+  id    Int      @id @default(autoincrement())
+  name  String?
+  email String   @unique
+  role  UserRole
+}
+
+enum ContactRole {
+  PARENT_MOTHER
+  PARENT_FATHER
+  TEACHER
+  GUARDIAN
+}
+
+enum UserRole {
+  THERAPIST
+  STUDENT
+  PARENT
+  PUBLIC
+}
+
+enum SessionStatus {
+  PRESENT
+  ABSENT
+  CANCELLED
+}
+
+enum StudentCondition {
+  OK
+  TIRED
+  DISTRACTED
+}
+
+enum ServiceDeliveryModel {
+  TELETHERAPY
+  IN_PERSON
+}
+
+enum ProgressMade {
+  NO_PROGRESS
+  POSITIVE_NO_PROGRESS
+  EXPECTED_PROGRESS
+}
+
+enum SessionGoal {
+  LANGUAGE
+  ARTICULATION
+  PHONOLOGY
+}
+
+enum PromptType {
+  Verbal
+  Written
+  Phonetic
+  Gestural
+  Tactile
+}
+
+model Prompt {
+  id          Int        @id @default(autoincrement())
+  promptType  PromptType
+  description String
+  wasUseful   Boolean
+  Session     Session?   @relation(fields: [sessionId], references: [id])
+  sessionId   Int?
+}
+
+enum SessionType {
+  TREATMENT
+  CONSULTATION
+}
+
+model Session {
+  id                   Int                  @id @default(autoincrement())
+  startTime            DateTime
+  duration             Int                  @default(30)
+  status               SessionStatus        @default(PRESENT)
+  studentCondition     StudentCondition     @default(OK)
+  serviceDeliveryModel ServiceDeliveryModel @default(TELETHERAPY)
+  progressMade         ProgressMade
+  goal                 SessionGoal
+  responseAccuracy     Int
+  prompts              Prompt[]
+  type                 SessionType          @default(TREATMENT)
+  notes                String?
+}
+
+enum ClassroomSetting {
+  GENERAL_EDUCATION
+  TWELVE_TO_ONE
+  ICT
+}
+
+model Student {
+  id                    Int              @id @default(autoincrement())
+  firstName             String
+  lastName              String
+  alternativeNames      String[]
+  birthday              DateTime
+  grade                 Int
+  school                String
+  diagnosis             String
+  classroomSetting      ClassroomSetting
+  previousTriannualDate DateTime
+  iepReports            IEP[]
+  mandatesPerWeek       Int
+  medicalInfo           String
+  strengths             String
+  weaknesses            String
+
+  // One to one
+  primaryTeacher   Contact? @relation(fields: [primaryTeacherId], references: [id])
+  primaryTeacherId Int?
+
+  // One student to many contacts
+  contacts  ContactForStudent[]
+  contactId Int?
+}
+
+model ContactForStudent {
+  student   Student  @relation(fields: [studentId], references: [id])
+  studentId Int
+  contact   Contact  @relation(fields: [contactId], references: [id])
+  contactId Int
+  createdAt DateTime @default(now())
+
+  @@id([studentId, contactId])
+}
+
+model Contact {
+  id          Int         @id @default(autoincrement())
+  name        String
+  phoneNumber String
+  type        ContactRole
+
+  student            Student?
+  contactsForStudent ContactForStudent[]
+}
+
+model IEP {
+  id         Int      @id @default(autoincrement())
+  annualDate DateTime
+  goals      String
+  Student    Student? @relation(fields: [studentId], references: [id])
+  studentId  Int?
 }
