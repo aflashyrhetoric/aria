@@ -8,10 +8,11 @@ datasource db {
 }
 
 model User {
-  id    Int      @id @default(autoincrement())
-  name  String?
-  email String   @unique
-  role  UserRole
+  id      Int       @id @default(autoincrement())
+  name    String?
+  email   String    @unique
+  role    UserRole
+  sessions Session[]
 }
 
 enum ContactRole {
@@ -92,6 +93,10 @@ model Session {
   prompts              Prompt[]
   type                 SessionType          @default(TREATMENT)
   notes                String?
+  therapist            User                 @relation(fields: [therapistId], references: [id])
+  therapistId          Int
+
+  students Student[]
 }
 
 enum ClassroomSetting {

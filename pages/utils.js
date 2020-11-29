@@ -1,5 +1,9 @@
 import { alphabet } from './vars'
 
+export const randomNumber = (max) => {
+  return Math.floor(Math.random() * max)
+}
+
 export const randomLetter = () => {
   const randomNumber = Math.floor(Math.random() * 26)
   return alphabet.lower[randomNumber]
