@@ -23,3 +23,7 @@
 - For now, open `psql` (or `psql -d slp-backend`) and run whatever SQL files we do have to generate the tables
 - For now, just add a few fakey records using TablePlus or Postico or whatever
 
+## Future roadmap ideas:
+
+- Add microcopy ("you go girl") to various pages
+- Add pronoun support / linting
