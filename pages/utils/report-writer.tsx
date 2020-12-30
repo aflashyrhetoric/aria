@@ -1,5 +1,7 @@
-import { upperFirst } from 'lodash'
 import { useState, useEffect } from 'react'
+import { upperFirst } from 'lodash'
+import Head from 'next/head'
+import { CopyToClipboard } from 'react-copy-to-clipboard'
 import {
   Form,
   TextInput,
@@ -101,168 +103,206 @@ export default function ReportWriter() {
     {} as TemplateFields
   )
   const [output, setOutput] = useState('')
+  const [copied, setCopied] = useState(false)
+
+  useEffect(() => {
+    if (copied) {
+      setTimeout(() => {
+        setCopied(false)
+      }, 1000)
+    }
+  }, [copied])
 
   useEffect(() => {
     setOutput(template(formState))
   }, [formState])
 
   return (
-    <div className={styles.container}>
-      <div className={styles.left}>
-        <h2>Input Form Data</h2>
-        <Form style={{ width: '550px' }}>
-          <TextInput
-            id="name-input"
-            type="text"
-            size="sm"
-            labelText="Student Name"
-            value={formState && formState.name}
-            placeholder="Student"
-            onChange={e => setFormState({ ...formState, name: e.target.value })}
-          />
-          <div style={{ marginBottom: '10px' }} />
-          <RadioButtonGroup
-            labelText="Pronouns"
-            name="pronoun-selector"
-            defaultSelected={'they'}
-            onChange={e =>
-              setFormState({ ...formState, pronouns: PRONOUNS[e] })
-            }
-          >
-            {Object.keys(PRONOUNS).map(p => (
-              <RadioButton key={p} value={p} labelText={p} id={p} />
-            ))}
-          </RadioButtonGroup>
-          <div style={{ marginBottom: '10px' }} />
-          <hr />
-          <div style={{ marginBottom: '10px' }} />
-          <Select
-            id="received"
-            labelText="How was the student received?"
-            defaultValue={formState && formState.received}
-            onChange={e =>
-              setFormState({ ...formState, received: e.target.value })
-            }
-          >
-            {/* <SelectItem value="" text={'Select...'} /> */}
-            {RECEIVED_STATES.map(received => (
-              <SelectItem key={received} value={received} text={received} />
-            ))}
-          </Select>
-          <div style={{ marginBottom: '10px' }} />
-          <TextInput
-            type="text"
-            size="sm"
-            labelText="Activity Name"
-            placeholder="Crossword puzzles"
-            value={formState && formState.participated_in}
-            onChange={e =>
-              setFormState({ ...formState, participated_in: e.target.value })
-            }
-          />
-          <div style={{ marginBottom: '10px' }} />
-          <MultiSelect
-            id="targeted_skills"
-            titleText="Targeted Skills"
-            label="Targeted skills"
-            items={TARGETED_SKILLS}
-            itemToString={i => i}
-            onChange={e =>
-              setFormState({ ...formState, targeted_skills: e.selectedItems })
-            }
-          />
-          <div style={{ marginBottom: '10px' }} />
-
-          <p>
-            <strong>Quick Set Accuracy Level: </strong>
-          </p>
-          <ul style={{ display: 'inline' }}>
-            {[25, 50, 75, 80, 90, 100].map(pc => (
-              <Button
-                style={{ width: '25px' }}
-                size="sm"
-                kind="secondary"
-                onClick={e =>
-                  setFormState({ ...formState, accuracy_level: `${pc}` })
-                }
-              >
-                {pc}%
-              </Button>
-            ))}
-          </ul>
-          <div style={{ marginBottom: '10px' }} />
-          <TextInput
-            type="text"
-            size="sm"
-            labelText="Accuracy Level (omit the % symbol)"
-            placeholder="25"
-            value={formState && formState.accuracy_level}
-            onChange={e => {
-              let value = e.target.value
-              value = value.replaceAll(/%/g, '')
-              setFormState({ ...formState, accuracy_level: value })
-            }}
-          />
-          <div style={{ marginBottom: '10px' }} />
-          <Select
-            id="prompt_level"
-            labelText="Prompt Level"
-            value={formState && formState.prompt_level}
-            onChange={e =>
-              setFormState({ ...formState, prompt_level: e.target.value })
-            }
-          >
-            <SelectItem value="" text={'Select a prompt level'} />
-            {PROMPT_LEVELS.map(promptLevel => (
-              <SelectItem value={promptLevel} text={promptLevel} />
-            ))}
-          </Select>
-          <div style={{ marginBottom: '10px' }} />
-
-          <MultiSelect
-            id="prompt_types"
-            titleText="Prompt Type(s)"
-            label={formState.prompt_types.join(', ') || 'Prompt Type'}
-            items={PROMPT_TYPES}
-            itemToString={i => i}
-            onChange={e =>
-              setFormState({ ...formState, prompt_types: e.selectedItems })
-            }
-          />
-          <div style={{ marginBottom: '10px' }} />
-
-          <div style={{ paddingLeft: '1rem' }}>
-            {formState &&
-              formState.prompt_types &&
-              formState.prompt_types.length > 0 &&
-              formState.prompt_types.map(pt => (
-                <>
-                  <MultiSelect
-                    id="prompt_types"
-                    titleText={`Select ${pt} subtypes (optional)`}
-                    label={pt}
-                    items={PROMPT_TYPE_SUBTYPE_MAP[pt]}
-                    itemToString={i => i}
-                    onChange={e => {
-                      setFormState({
-                        ...formState,
-                        prompt_subtypes: {
-                          ...formState.prompt_subtypes,
-                          [pt]: e.selectedItems,
-                        },
-                      })
-                    }}
-                  />
-                  <div style={{ marginBottom: '10px' }} />
-                </>
+    <>
+      <Head>
+        <title>SLP Report Writer</title>
+        <link
+          rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+        />
+      </Head>
+      <div className={styles.container}>
+        <div className={styles.left}>
+          <h2>Input Form Data</h2>
+          <Form style={{ width: '550px' }}>
+            <TextInput
+              id="name-input"
+              type="text"
+              size="sm"
+              labelText="Student Name"
+              value={formState && formState.name}
+              placeholder="Student"
+              onChange={e =>
+                setFormState({ ...formState, name: e.target.value })
+              }
+            />
+            <div style={{ marginBottom: '20px' }} />
+            <RadioButtonGroup
+              labelText="Pronouns"
+              name="pronoun-selector"
+              defaultSelected={'they'}
+              onChange={e =>
+                setFormState({ ...formState, pronouns: PRONOUNS[e] })
+              }
+            >
+              {Object.keys(PRONOUNS).map(p => (
+                <RadioButton key={p} value={p} labelText={p} id={p} />
               ))}
-          </div>
-        </Form>
+            </RadioButtonGroup>
+            <div style={{ marginBottom: '20px' }} />
+            <Select
+              id="received"
+              labelText="How was the student received?"
+              defaultValue={formState && formState.received}
+              onChange={e =>
+                setFormState({ ...formState, received: e.target.value })
+              }
+            >
+              {/* <SelectItem value="" text={'Select...'} /> */}
+              {RECEIVED_STATES.map(received => (
+                <SelectItem key={received} value={received} text={received} />
+              ))}
+            </Select>
+            <div style={{ marginBottom: '10px' }} />
+            <TextInput
+              type="text"
+              size="sm"
+              labelText="Activity Name"
+              placeholder="Crossword puzzles"
+              value={formState && formState.participated_in}
+              onChange={e =>
+                setFormState({ ...formState, participated_in: e.target.value })
+              }
+            />
+            <div style={{ marginBottom: '10px' }} />
+            <MultiSelect
+              id="targeted_skills"
+              titleText="Targeted Skills"
+              label="Targeted skills"
+              items={TARGETED_SKILLS}
+              itemToString={i => i}
+              onChange={e =>
+                setFormState({ ...formState, targeted_skills: e.selectedItems })
+              }
+            />
+            <div style={{ marginBottom: '10px' }} />
+
+            <p>
+              <strong>Quick-Set Accuracy Level: </strong>
+            </p>
+            <ul style={{ display: 'inline' }}>
+              {[25, 50, 75, 80, 90, 100].map(pc => (
+                <Button
+                  style={{ width: '25px' }}
+                  size="sm"
+                  kind="secondary"
+                  onClick={e =>
+                    setFormState({ ...formState, accuracy_level: `${pc}` })
+                  }
+                >
+                  {pc}%
+                </Button>
+              ))}
+            </ul>
+            <div style={{ marginBottom: '10px' }} />
+            <TextInput
+              type="text"
+              size="sm"
+              labelText="Accuracy Level (omit the % symbol)"
+              placeholder="25"
+              value={formState && formState.accuracy_level}
+              onChange={e => {
+                let value = e.target.value
+                value = value.replaceAll(/%/g, '')
+                setFormState({ ...formState, accuracy_level: value })
+              }}
+            />
+            <div style={{ marginBottom: '10px' }} />
+            <Select
+              id="prompt_level"
+              labelText="Prompt Level"
+              value={formState && formState.prompt_level}
+              onChange={e =>
+                setFormState({ ...formState, prompt_level: e.target.value })
+              }
+            >
+              <SelectItem value="" text={'Select a prompt level'} />
+              {PROMPT_LEVELS.map(promptLevel => (
+                <SelectItem value={promptLevel} text={promptLevel} />
+              ))}
+            </Select>
+            <div style={{ marginBottom: '10px' }} />
+
+            <MultiSelect
+              id="prompt_types"
+              titleText="Prompt Type(s)"
+              label={
+                (formState &&
+                  formState.prompt_types &&
+                  formState.prompt_types.join(', ')) ||
+                'Prompt Type'
+              }
+              items={PROMPT_TYPES}
+              itemToString={i => i}
+              onChange={e =>
+                setFormState({ ...formState, prompt_types: e.selectedItems })
+              }
+            />
+            <div style={{ marginBottom: '10px' }} />
+
+            <div style={{ paddingLeft: '1rem' }}>
+              {formState &&
+                formState.prompt_types &&
+                formState.prompt_types.length > 0 &&
+                formState.prompt_types.map(pt => (
+                  <>
+                    <MultiSelect
+                      id="prompt_types"
+                      titleText={`${upperFirst(pt)} prompts (optional)`}
+                      label={
+                        (formState &&
+                          formState.prompt_subtypes &&
+                          formState.prompt_subtypes[pt] &&
+                          formState.prompt_subtypes[pt].join(', ')) ||
+                        'Select..'
+                      }
+                      items={PROMPT_TYPE_SUBTYPE_MAP[pt]}
+                      itemToString={i => i}
+                      onChange={e => {
+                        setFormState({
+                          ...formState,
+                          prompt_subtypes: {
+                            ...formState.prompt_subtypes,
+                            [pt]: e.selectedItems,
+                          },
+                        })
+                      }}
+                    />
+                    <div style={{ marginBottom: '20px' }} />
+                  </>
+                ))}
+            </div>
+          </Form>
+        </div>
+        <div className={styles.right}>
+          <h2 style={{ userSelect: 'none' }}>Report Text</h2>
+          {copied && (
+            <span
+              className={`animate__animated animate__fadeOut ${styles.copied}`}
+            >
+              Copied!
+            </span>
+          )}
+          <CopyToClipboard text={output} onCopy={() => setCopied(true)}>
+            <p className={styles.output}>{output}</p>
+          </CopyToClipboard>
+        </div>
       </div>
-      <div className={styles.right}>
-        <h2 style={{ userSelect: 'none' }}>Report Text</h2>
-        <p className={styles.output}>{output}</p>
-      </div>
-    </div>
+    </>
   )
 }
