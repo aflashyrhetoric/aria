@@ -1,0 +1,25 @@
+.container {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-around;
+
+  padding: 2rem;
+}
+
+// text output
+.output {
+  display: inline-block;
+  font-size: 30px;
+  max-width: 500px;
+}
+.left {
+  h2 {
+    margin-bottom: 2rem;
+  }
+}
+
+.right {
+  h2 {
+    margin-bottom: 2rem;
+  }
+}
