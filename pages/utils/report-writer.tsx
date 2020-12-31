@@ -93,9 +93,9 @@ ${name === '' ? 'Student' : name} was received ${received}. ${upperFirst(
     pronouns.he
   )} participated in ${participated_in} to increase ${
     pronouns.his
-  } ${targeted_skills.join(' & ')} abilities. ${upperFirst(
+  } ${targeted_skills.join(', ')} abilities. ${upperFirst(
     pronouns.he
-  )} responded with ${accuracy_level}% provided ${prompt_level} prompting and ${cuesString}.`
+  )} responded with ${accuracy_level}% accuracy provided ${prompt_level} prompting and ${cuesString}.`
 }
 
 export default function ReportWriter() {
@@ -120,7 +120,11 @@ export default function ReportWriter() {
   return (
     <>
       <Head>
-        <title>SLP Report Writer</title>
+        <title>
+          {formState && formState.name === 'Student'
+            ? 'SLP Kit: Report Writer'
+            : `${formState.name}: Report`}
+        </title>
         <link
           rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
@@ -170,6 +174,7 @@ export default function ReportWriter() {
             </Select>
             <div style={{ marginBottom: '10px' }} />
             <TextInput
+              id="activity_name"
               type="text"
               size="sm"
               labelText="Activity Name"
@@ -198,6 +203,7 @@ export default function ReportWriter() {
             <ul style={{ display: 'inline' }}>
               {[25, 50, 75, 80, 90, 100].map(pc => (
                 <Button
+                  key={`${pc}-button`}
                   style={{ width: '25px' }}
                   size="sm"
                   kind="secondary"
@@ -211,6 +217,7 @@ export default function ReportWriter() {
             </ul>
             <div style={{ marginBottom: '10px' }} />
             <TextInput
+              id="accuracy_level"
               type="text"
               size="sm"
               labelText="Accuracy Level (omit the % symbol)"
@@ -233,7 +240,11 @@ export default function ReportWriter() {
             >
               <SelectItem value="" text={'Select a prompt level'} />
               {PROMPT_LEVELS.map(promptLevel => (
-                <SelectItem value={promptLevel} text={promptLevel} />
+                <SelectItem
+                  key={promptLevel}
+                  value={promptLevel}
+                  text={promptLevel}
+                />
               ))}
             </Select>
             <div style={{ marginBottom: '10px' }} />
