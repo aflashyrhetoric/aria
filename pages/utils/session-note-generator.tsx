@@ -88,21 +88,68 @@ const template = ({
   */
 
   // Return the populated template data
-  return `
-${name === '' ? 'Student' : name} was received ${received}. ${upperFirst(
-    pronouns.he
-  )} participated in ${participated_in} to increase ${
-    pronouns.his
-  } ${targeted_skills.join(', ')} abilities. ${upperFirst(
-    pronouns.he
-  )} responded with ${accuracy_level}% accuracy provided ${prompt_level} prompting and ${cuesString}.`
+
+  return [
+    <p className={styles.cuesString}>
+      <span style={{ background: COLORS.name }}>{`${
+        name === '' ? 'Student' : name
+      }`}</span>
+      <span>was received</span>
+      <span style={{ background: COLORS.received }}>{`${received}. `}</span>
+      <span style={{ background: COLORS.pronoun }}>{`${upperFirst(
+        pronouns.he
+      )} `}</span>
+      <span>participated in</span>
+      <span
+        style={{ background: COLORS.participated_in }}
+      >{`${participated_in}`}</span>
+      <span>to increase </span>
+      <span style={{ background: COLORS.pronoun }}>{`${pronouns.his} `}</span>
+      <span
+        style={{ background: COLORS.targeted_skills }}
+      >{`${targeted_skills.join(', ')} `}</span>
+      <span>abilities. </span>
+      <span style={{ background: COLORS.pronoun }}>{`${upperFirst(
+        pronouns.he
+      )}`}</span>
+      <span>responded with </span>
+      <span
+        style={{ background: COLORS.accuracy_level }}
+      >{`${accuracy_level}%`}</span>
+      <span>accuracy provided</span>
+      <span
+        style={{ background: COLORS.prompt_level }}
+      >{`${prompt_level}%`}</span>
+      <span>prompting and </span>
+      <span style={{ background: COLORS.cuesString }}>{cuesString}</span>
+      prompting and ${cuesString}.
+    </p>,
+    `${name === '' ? 'Student' : name} was received ${received}. ${upperFirst(
+      pronouns.he
+    )} participated in ${participated_in} to increase ${
+      pronouns.his
+    } ${targeted_skills.join(', ')}  abilities. ${upperFirst(
+      pronouns.he
+    )} responded with ${accuracy_level}% accuracy provided ${prompt_level}% prompting and cuesString} prompting and ${cuesString}.`,
+  ]
+}
+
+const COLORS = {
+  name: 'red',
+  pronoun: 'green',
+  received: 'blue',
+  participated_in: 'pink',
+  targeted_skills: 'salmon',
+  accuracy_level: 'brown',
+  prompt_level: 'orange',
+  cuesString: 'purple',
 }
 
 export default function ReportWriter() {
   const [formState, setFormState] = useState<TemplateFields>(
     {} as TemplateFields
   )
-  const [output, setOutput] = useState('')
+  const [output, setOutput] = useState(null)
   const [copied, setCopied] = useState(false)
 
   useEffect(() => {
@@ -119,6 +166,9 @@ export default function ReportWriter() {
 
   return (
     <>
+      <Head>
+        <title>{`${formState.name || ''} Session Notes`}</title>
+      </Head>
       <div className={styles.container}>
         <div className={styles.left}>
           <h2>Input Form Data</h2>
@@ -298,8 +348,13 @@ export default function ReportWriter() {
               Copied!
             </span>
           )}
-          <CopyToClipboard text={output} onCopy={() => setCopied(true)}>
-            <p className={styles.output}>{output}</p>
+          <CopyToClipboard
+            text={
+              output && output.length > 0 ? output[1] : 'Report not completed'
+            }
+            onCopy={() => setCopied(true)}
+          >
+            <p className={styles.output}>{output[0]}</p>
           </CopyToClipboard>
         </div>
       </div>

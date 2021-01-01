@@ -12,6 +12,19 @@
   font-size: 30px;
   max-width: 500px;
 }
+
+.cuesString {
+  line-height: 30px;
+  span {
+    display: inline-block;
+    padding: {
+      left: 8px;
+      right: 8px;
+    }
+    margin-right: 5px;
+  }
+}
+
 .left {
   h2 {
     margin-bottom: 2rem;
