@@ -26,6 +26,7 @@ import {
   Pronouns,
 } from './types'
 
+import { randomColor } from '../utils'
 const styles = require('./session-note-generator.module.scss')
 
 // event handler
@@ -134,16 +135,32 @@ const template = ({
   ]
 }
 
-const COLORS = {
-  name: 'red',
-  pronoun: 'green',
-  received: 'blue',
-  participated_in: 'pink',
-  targeted_skills: 'salmon',
-  accuracy_level: 'brown',
-  prompt_level: 'orange',
-  cuesString: 'purple',
-}
+const FIELDS = [
+  'name',
+  'pronoun',
+  'received',
+  'participated_in',
+  'targeted_skills',
+  'accuracy_level',
+  'prompt_level',
+  'cuesString',
+]
+
+const COLORS = FIELDS.reduce((COLORS, fieldName) => {
+  COLORS[fieldName] = randomColor()
+  return COLORS
+}, {})
+
+// const COLORS = {
+//   name: 'red',
+//   pronoun: 'green',
+//   received: 'blue',
+//   participated_in: 'pink',
+//   targeted_skills: 'salmon',
+//   accuracy_level: 'brown',
+//   prompt_level: 'orange',
+//   cuesString: 'purple',
+// }
 
 export default function ReportWriter() {
   const [formState, setFormState] = useState<TemplateFields>(
@@ -354,7 +371,7 @@ export default function ReportWriter() {
             }
             onCopy={() => setCopied(true)}
           >
-            <p className={styles.output}>{output[0]}</p>
+            <p className={styles.output}>{output && output[0]}</p>
           </CopyToClipboard>
         </div>
       </div>
