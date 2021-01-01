@@ -3,6 +3,9 @@
 ## Polish Ideas:
 - add last `and`
 - update copied styling
-- add bg to report text
 - fix scrolling / increase page height
 - add color coding to show the field<->report mapping thingy
+
+## Nice-To-Have
+- Dark-theme/light-theme toggling
+- 
