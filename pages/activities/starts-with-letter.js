@@ -20,14 +20,14 @@ export default function startsWithLetter() {
     ImageClient.search
       .photos('umbrella')
       .then(toJson)
-      .then((response) => {
+      .then(response => {
         setImages(response.results)
         setLoading(false)
       })
   }
 
   return (
-    <div className="paper container">
+    <div className="container">
       <h2>
         Activities: Find all the images starting with letter "{RANDOM_LETTER}"
       </h2>
@@ -36,7 +36,7 @@ export default function startsWithLetter() {
 
       {images && started ? (
         <ul>
-          {images.map((i) => (
+          {images.map(i => (
             <img src={i.urls.thumb} />
           ))}
         </ul>

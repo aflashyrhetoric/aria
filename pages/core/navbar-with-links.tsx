@@ -41,15 +41,15 @@ const Navbar: React.FC<NavbarProps> = (props: NavbarProps) => {
             <HeaderMenuItem disabled href="#">
               Sessions
             </HeaderMenuItem>
-            <HeaderMenuItem disabled href="/utils/report-writer">
+            {/* <HeaderMenuItem disabled href="/utils/report-writer">
               Report Writer
-            </HeaderMenuItem>
-            {/* <HeaderMenuItem href="#">Link 3</HeaderMenuItem>
-            <HeaderMenu aria-label="Link 4" menuLinkName="Link 4">
-              <HeaderMenuItem href="#">Sub-link 1</HeaderMenuItem>
-              <HeaderMenuItem href="#">Sub-link 2</HeaderMenuItem>
-              <HeaderMenuItem href="#">Sub-link 3</HeaderMenuItem>
-            </HeaderMenu> */}
+            </HeaderMenuItem> */}
+            {/* <HeaderMenuItem href="#">Utilities</HeaderMenuItem> */}
+            <HeaderMenu aria-label="Link 4" menuLinkName="Tools">
+              <HeaderMenuItem href="/utils/session-note-generator">Session Note Generator</HeaderMenuItem>
+              {/* <HeaderMenuItem href="#">Sub-link 2</HeaderMenuItem>
+              <HeaderMenuItem href="#">Sub-link 3</HeaderMenuItem> */}
+            </HeaderMenu>
           </HeaderNavigation>
           <HeaderGlobalBar>
             {/* <HeaderGlobalAction

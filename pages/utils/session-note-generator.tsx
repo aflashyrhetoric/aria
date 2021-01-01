@@ -26,7 +26,7 @@ import {
   Pronouns,
 } from './types'
 
-const styles = require('./report-writer.module.scss')
+const styles = require('./session-note-generator.module.scss')
 
 // event handler
 // storage of values
