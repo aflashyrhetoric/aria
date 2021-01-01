@@ -119,17 +119,6 @@ export default function ReportWriter() {
 
   return (
     <>
-      <Head>
-        <title>
-          {formState && formState.name === 'Student'
-            ? 'SLP Kit: Report Writer'
-            : `${formState.name}: Report`}
-        </title>
-        <link
-          rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
-        />
-      </Head>
       <div className={styles.container}>
         <div className={styles.left}>
           <h2>Input Form Data</h2>
