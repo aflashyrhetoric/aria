@@ -21,6 +21,6 @@ export const randomLetterN = n => {
 export function randomColor() {
   const hue = randomNumber(360)
   const saturation = 75
-  const luminosity = 75
+  const luminosity = 84
   return hsl(hue, saturation, luminosity)
 }

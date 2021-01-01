@@ -8,4 +8,5 @@
 
 ## Nice-To-Have
 - Dark-theme/light-theme toggling
-- 
+- Hovering over the input highlights the form on the right
+- Clicking on the right focuses the form on the left, OR allows inline typing

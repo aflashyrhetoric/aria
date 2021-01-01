@@ -12,6 +12,7 @@ import {
   SelectItem,
   Button,
 } from 'carbon-components-react'
+import { Copy24 } from '@carbon/icons-react'
 import {
   PromptLevel,
   PromptType,
@@ -60,6 +61,20 @@ const buildCuesString = (types, subtypes: object) => {
   return [...withoutSubtypes, ...withSubtypes].join(', ')
 }
 
+const COLORS: any = [
+  'name',
+  'pronoun',
+  'received',
+  'participated_in',
+  'targeted_skills',
+  'accuracy_level',
+  'prompt_level',
+  'cuesString',
+].reduce((COLORS, fieldName) => {
+  COLORS[fieldName] = randomColor()
+  return COLORS
+}, {})
+
 const template = ({
   name = 'Student',
   pronouns = PRONOUNS.they,
@@ -99,7 +114,7 @@ const template = ({
       <span style={{ background: COLORS.received }}>{`${received}. `}</span>
       <span style={{ background: COLORS.pronoun }}>{`${upperFirst(
         pronouns.he
-      )} `}</span>
+      )}`}</span>
       <span>participated in</span>
       <span
         style={{ background: COLORS.participated_in }}
@@ -134,22 +149,6 @@ const template = ({
     )} responded with ${accuracy_level}% accuracy provided ${prompt_level}% prompting and cuesString} prompting and ${cuesString}.`,
   ]
 }
-
-const FIELDS = [
-  'name',
-  'pronoun',
-  'received',
-  'participated_in',
-  'targeted_skills',
-  'accuracy_level',
-  'prompt_level',
-  'cuesString',
-]
-
-const COLORS = FIELDS.reduce((COLORS, fieldName) => {
-  COLORS[fieldName] = randomColor()
-  return COLORS
-}, {})
 
 // const COLORS = {
 //   name: 'red',
@@ -188,19 +187,26 @@ export default function ReportWriter() {
       </Head>
       <div className={styles.container}>
         <div className={styles.left}>
-          <h2>Input Form Data</h2>
+          <h2>Session Data</h2>
           <Form style={{ width: '550px' }}>
-            <TextInput
-              id="name-input"
-              type="text"
-              size="sm"
-              labelText="Student Name"
-              value={formState && formState.name}
-              placeholder="Student"
-              onChange={e =>
-                setFormState({ ...formState, name: e.target.value })
-              }
-            />
+            <div className={styles.colorContainer}>
+              <div
+                style={{
+                  background: COLORS.name,
+                }}
+              ></div>
+              <TextInput
+                id="name-input"
+                type="text"
+                size="sm"
+                labelText="Student Name"
+                value={formState && formState.name}
+                placeholder="Student"
+                onChange={e =>
+                  setFormState({ ...formState, name: e.target.value })
+                }
+              />
+            </div>
             <div style={{ marginBottom: '20px' }} />
             <RadioButtonGroup
               labelText="Pronouns"
@@ -357,7 +363,25 @@ export default function ReportWriter() {
           </Form>
         </div>
         <div className={styles.right}>
-          <h2 style={{ userSelect: 'none' }}>Report Text</h2>
+          <h2 style={{ userSelect: 'none' }}>
+            Report Text{' '}
+            <CopyToClipboard
+              text={
+                output && output.length > 0 ? output[1] : 'Report not completed'
+              }
+              onCopy={() => setCopied(true)}
+            >
+              <div
+                style={{
+                  display: 'inline-block',
+                  cursor: 'pointer',
+                  opacity: 0.8,
+                }}
+              >
+                <Copy24 />
+              </div>
+            </CopyToClipboard>
+          </h2>
           {copied && (
             <span
               className={`animate__animated animate__fadeOut ${styles.copied}`}

@@ -6,6 +6,22 @@
   padding: 2rem;
 }
 
+.colorContainer {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  > div:first-child {
+    position: absolute;
+    height: 25px;
+    width: 25px;
+    z-index: 1;
+    left: -30px;
+    bottom: 5px;
+    border-radius: 100%;
+  }
+}
+
 // text output
 .output {
   display: inline-block;
@@ -14,17 +30,16 @@
 }
 
 .cuesString {
+  font-size: 24px;
   line-height: 50px;
   span {
     display: inline-flex;
     justify-content: center;
     align-items: center;
-    height: 30px;
-    padding: {
-      left: 8px;
-      right: 8px;
-    }
-    margin-right: 5px;
+    height: 38px;
+    padding: 6px;
+    border-radius: 2px;
+    margin-right: 4px;
   }
 }
 
@@ -44,7 +59,7 @@
 .copied {
   z-index: 1;
   position: absolute;
-  right: 0;
+  right: 40%;
   top: 5px;
   height: 30px;
   width: 80px;
@@ -52,10 +67,10 @@
   background: white;
   color: rgb(22, 22, 22) !important;
   padding: 2px;
-  padding-top: 6px;
-  border-radius: 0px;
+  padding-top: 8px;
+  border-radius: 6px;
   margin-left: 3px;
   font-weight: bold;
   border: 0;
-  box-shadow: 0 2px 4px 2px rgb(112, 112, 112);
+  box-shadow: 0 2px 4px 2px rgb(209, 209, 209);
 }
