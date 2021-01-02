@@ -100,3 +100,13 @@ export const PRONOUNS = {
 
 // TODO: verbal = ["x",y]
 export enum PromptSubtype {}
+
+export interface SessionActivity {
+  participated_in: string
+  targeted_skills: TargetedSkill[]
+  accuracy_level: string // 25, 50, 75, 80, 90, 100 click to populate field
+
+  prompt_level: PromptLevel
+  prompt_types: PromptType[]
+  prompt_subtypes: object
+}
