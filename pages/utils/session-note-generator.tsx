@@ -3,14 +3,16 @@ import { upperFirst } from 'lodash'
 import Head from 'next/head'
 import { CopyToClipboard } from 'react-copy-to-clipboard'
 import {
+  Button,
   Form,
-  TextInput,
+  FormGroup,
   MultiSelect,
   RadioButton,
   RadioButtonGroup,
   Select,
   SelectItem,
-  Button,
+  TextInput,
+  ToggleSmall,
 } from 'carbon-components-react'
 import { Copy24 } from '@carbon/icons-react'
 import {
@@ -61,31 +63,45 @@ const buildCuesString = (types, subtypes: object) => {
   return [...withoutSubtypes, ...withSubtypes].join(', ')
 }
 
-const COLORS: any = [
-  'name',
-  'pronoun',
-  'received',
-  'participated_in',
-  'targeted_skills',
-  'accuracy_level',
-  'prompt_level',
-  'cuesString',
-].reduce((COLORS, fieldName) => {
-  COLORS[fieldName] = randomColor()
-  return COLORS
-}, {})
+// const COLORS: any = [
+//   'name',
+//   'pronoun',
+//   'received',
+//   'participated_in',
+//   'targeted_skills',
+//   'accuracy_level',
+//   'prompt_level',
+//   'cuesString',
+// ].reduce((COLORS, fieldName) => {
+//   COLORS[fieldName] = randomColor()
+//   return COLORS
+// }, {})
 
-const template = ({
-  name = 'Student',
-  pronouns = PRONOUNS.they,
-  received = ReceivedState.ENGAGED,
-  participated_in = UNDERSCORE,
-  targeted_skills = [UNDERSCORE],
-  accuracy_level = UNDERSCORE, // TODO ? Pre-populate later based on previous sessions accuracy_level
-  prompt_level = UNDERSCORE,
-  prompt_types = [],
-  prompt_subtypes = {},
-}) => {
+const COLORS = {
+  name: '#f5bcbc',
+  pronoun: '#f5eebc',
+  received: '#c8f5bc',
+  participated_in: '#bcf5ee',
+  targeted_skills: '#bcbff5',
+  accuracy_level: '#f5bcf2',
+  prompt_level: '#9296fc',
+  cuesString: '#fcb292',
+}
+
+const template = (
+  {
+    name = 'Student',
+    pronouns = PRONOUNS.they,
+    received = ReceivedState.ENGAGED,
+    participated_in = UNDERSCORE,
+    targeted_skills = [UNDERSCORE],
+    accuracy_level = UNDERSCORE, // TODO ? Pre-populate later based on previous sessions accuracy_level
+    prompt_level = UNDERSCORE,
+    prompt_types = [],
+    prompt_subtypes = {},
+  },
+  colorize
+) => {
   const cuesString =
     Object.keys(prompt_subtypes).length === 0
       ? `${prompt_types.join(', ')} cues`
@@ -106,7 +122,11 @@ const template = ({
   // Return the populated template data
 
   return [
-    <p className={styles.cuesString}>
+    <p
+      className={`${styles.cuesString} ${
+        !colorize && styles.disableColorization
+      }`}
+    >
       <span style={{ background: COLORS.name }}>{`${
         name === '' ? 'Student' : name
       }`}</span>
@@ -137,8 +157,7 @@ const template = ({
         style={{ background: COLORS.prompt_level }}
       >{`${prompt_level}%`}</span>
       <span>prompting and </span>
-      <span style={{ background: COLORS.cuesString }}>{cuesString}</span>
-      prompting and ${cuesString}.
+      <span style={{ background: COLORS.cuesString }}>{cuesString}.</span>
     </p>,
     `${name === '' ? 'Student' : name} was received ${received}. ${upperFirst(
       pronouns.he
@@ -146,7 +165,7 @@ const template = ({
       pronouns.his
     } ${targeted_skills.join(', ')}  abilities. ${upperFirst(
       pronouns.he
-    )} responded with ${accuracy_level}% accuracy provided ${prompt_level}% prompting and cuesString} prompting and ${cuesString}.`,
+    )} responded with ${accuracy_level}% accuracy provided ${prompt_level}% prompting and ${cuesString} prompting and ${cuesString}.`,
   ]
 }
 
@@ -167,6 +186,7 @@ export default function ReportWriter() {
   )
   const [output, setOutput] = useState(null)
   const [copied, setCopied] = useState(false)
+  const [colorize, setColorize] = useState(true)
 
   useEffect(() => {
     if (copied) {
@@ -177,7 +197,7 @@ export default function ReportWriter() {
   }, [copied])
 
   useEffect(() => {
-    setOutput(template(formState))
+    setOutput(template(formState, colorize))
   }, [formState])
 
   return (
@@ -185,9 +205,30 @@ export default function ReportWriter() {
       <Head>
         <title>{`${formState.name || ''} Session Notes`}</title>
       </Head>
-      <div className={styles.container}>
+      <div
+        className={`${styles.container} ${
+          !colorize && styles.disableColorization
+        }`}
+      >
         <div className={styles.left}>
-          <h2>Session Data</h2>
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              width: '100%',
+            }}
+          >
+            <h2>Session Data</h2>
+            <div style={{ maxWidth: '70px' }}>
+              <ToggleSmall
+                id="colorize-toggle"
+                defaultToggled
+                labelText="Colorize!"
+                onToggle={e => setColorize(e)}
+              />
+            </div>
+          </div>
+
           <Form style={{ width: '550px' }}>
             <div className={styles.colorContainer}>
               <div
@@ -196,6 +237,7 @@ export default function ReportWriter() {
                 }}
               ></div>
               <TextInput
+                light
                 id="name-input"
                 type="text"
                 size="sm"
@@ -208,55 +250,94 @@ export default function ReportWriter() {
               />
             </div>
             <div style={{ marginBottom: '20px' }} />
-            <RadioButtonGroup
-              labelText="Pronouns"
-              name="pronoun-selector"
-              defaultSelected={'they'}
-              onChange={e =>
-                setFormState({ ...formState, pronouns: PRONOUNS[e] })
-              }
-            >
-              {Object.keys(PRONOUNS).map(p => (
-                <RadioButton key={p} value={p} labelText={p} id={p} />
-              ))}
-            </RadioButtonGroup>
+            <div className={styles.colorContainer}>
+              <div
+                style={{
+                  background: COLORS.pronoun,
+                }}
+              ></div>
+              <FormGroup legendText="Pronouns">
+                <RadioButtonGroup
+                  name="pronoun-selector"
+                  defaultSelected={'they'}
+                  onChange={e =>
+                    setFormState({ ...formState, pronouns: PRONOUNS[e] })
+                  }
+                >
+                  {Object.keys(PRONOUNS).map(p => (
+                    <RadioButton key={p} value={p} labelText={p} id={p} />
+                  ))}
+                </RadioButtonGroup>
+              </FormGroup>
+            </div>
             <div style={{ marginBottom: '20px' }} />
-            <Select
-              id="received"
-              labelText="How was the student received?"
-              defaultValue={formState && formState.received}
-              onChange={e =>
-                setFormState({ ...formState, received: e.target.value })
-              }
-            >
-              {/* <SelectItem value="" text={'Select...'} /> */}
-              {RECEIVED_STATES.map(received => (
-                <SelectItem key={received} value={received} text={received} />
-              ))}
-            </Select>
+            <div className={styles.colorContainer}>
+              <div
+                style={{
+                  background: COLORS.received,
+                }}
+              ></div>
+              <Select
+                light
+                id="received"
+                labelText="How was the student received?"
+                defaultValue={formState && formState.received}
+                style={{ width: '100%' }}
+                onChange={e =>
+                  setFormState({ ...formState, received: e.target.value })
+                }
+              >
+                {/* <SelectItem value="" text={'Select...'} /> */}
+                {RECEIVED_STATES.map(received => (
+                  <SelectItem key={received} value={received} text={received} />
+                ))}
+              </Select>
+            </div>
             <div style={{ marginBottom: '10px' }} />
-            <TextInput
-              id="activity_name"
-              type="text"
-              size="sm"
-              labelText="Activity Name"
-              placeholder="Crossword puzzles"
-              value={formState && formState.participated_in}
-              onChange={e =>
-                setFormState({ ...formState, participated_in: e.target.value })
-              }
-            />
+            <div className={styles.colorContainer}>
+              <div
+                style={{
+                  background: COLORS.participated_in,
+                }}
+              ></div>
+              <TextInput
+                light
+                id="activity_name"
+                type="text"
+                size="sm"
+                labelText="Activity Name"
+                placeholder="Crossword puzzles"
+                value={formState && formState.participated_in}
+                onChange={e =>
+                  setFormState({
+                    ...formState,
+                    participated_in: e.target.value,
+                  })
+                }
+              />
+            </div>
             <div style={{ marginBottom: '10px' }} />
-            <MultiSelect
-              id="targeted_skills"
-              titleText="Targeted Skills"
-              label="Targeted skills"
-              items={TARGETED_SKILLS}
-              itemToString={i => i}
-              onChange={e =>
-                setFormState({ ...formState, targeted_skills: e.selectedItems })
-              }
-            />
+            <div className={styles.colorContainer}>
+              <div
+                style={{
+                  background: COLORS.targeted_skills,
+                }}
+              ></div>
+              <MultiSelect
+                id="targeted_skills"
+                titleText="Targeted Skills"
+                label="Targeted skills"
+                items={TARGETED_SKILLS}
+                itemToString={i => i}
+                style={{ width: '100%' }}
+                onChange={e =>
+                  setFormState({
+                    ...formState,
+                    targeted_skills: e.selectedItems,
+                  })
+                }
+              />
+            </div>
             <div style={{ marginBottom: '10px' }} />
 
             <p>
@@ -278,54 +359,74 @@ export default function ReportWriter() {
               ))}
             </ul>
             <div style={{ marginBottom: '10px' }} />
-            <TextInput
-              id="accuracy_level"
-              type="text"
-              size="sm"
-              labelText="Accuracy Level (omit the % symbol)"
-              placeholder="25"
-              value={formState && formState.accuracy_level}
-              onChange={e => {
-                let value = e.target.value
-                value = value.replaceAll(/%/g, '')
-                setFormState({ ...formState, accuracy_level: value })
-              }}
-            />
+            <div className={styles.colorContainer}>
+              <div
+                style={{
+                  background: COLORS.accuracy_level,
+                }}
+              ></div>
+              <TextInput
+                id="accuracy_level"
+                type="text"
+                size="sm"
+                labelText="Accuracy Level (omit the % symbol)"
+                placeholder="25"
+                value={formState && formState.accuracy_level}
+                onChange={e => {
+                  let value = e.target.value
+                  value = value.replaceAll(/%/g, '')
+                  setFormState({ ...formState, accuracy_level: value })
+                }}
+              />
+            </div>
             <div style={{ marginBottom: '10px' }} />
-            <Select
-              id="prompt_level"
-              labelText="Prompt Level"
-              value={formState && formState.prompt_level}
-              onChange={e =>
-                setFormState({ ...formState, prompt_level: e.target.value })
-              }
-            >
-              <SelectItem value="" text={'Select a prompt level'} />
-              {PROMPT_LEVELS.map(promptLevel => (
-                <SelectItem
-                  key={promptLevel}
-                  value={promptLevel}
-                  text={promptLevel}
-                />
-              ))}
-            </Select>
+            <div className={styles.colorContainer}>
+              <div
+                style={{
+                  background: COLORS.prompt_level,
+                }}
+              ></div>
+              <Select
+                id="prompt_level"
+                labelText="Prompt Level"
+                value={formState && formState.prompt_level}
+                onChange={e =>
+                  setFormState({ ...formState, prompt_level: e.target.value })
+                }
+              >
+                <SelectItem value="" text={'Select a prompt level'} />
+                {PROMPT_LEVELS.map(promptLevel => (
+                  <SelectItem
+                    key={promptLevel}
+                    value={promptLevel}
+                    text={promptLevel}
+                  />
+                ))}
+              </Select>
+            </div>
             <div style={{ marginBottom: '10px' }} />
-
-            <MultiSelect
-              id="prompt_types"
-              titleText="Prompt Type(s)"
-              label={
-                (formState &&
-                  formState.prompt_types &&
-                  formState.prompt_types.join(', ')) ||
-                'Prompt Type'
-              }
-              items={PROMPT_TYPES}
-              itemToString={i => i}
-              onChange={e =>
-                setFormState({ ...formState, prompt_types: e.selectedItems })
-              }
-            />
+            <div className={styles.colorContainer}>
+              <div
+                style={{
+                  background: COLORS.cuesString,
+                }}
+              ></div>
+              <MultiSelect
+                id="prompt_types"
+                titleText="Prompt Type(s)"
+                label={
+                  (formState &&
+                    formState.prompt_types &&
+                    formState.prompt_types.join(', ')) ||
+                  'Prompt Type'
+                }
+                items={PROMPT_TYPES}
+                itemToString={i => i}
+                onChange={e =>
+                  setFormState({ ...formState, prompt_types: e.selectedItems })
+                }
+              />
+            </div>
             <div style={{ marginBottom: '10px' }} />
 
             <div style={{ paddingLeft: '1rem' }}>
