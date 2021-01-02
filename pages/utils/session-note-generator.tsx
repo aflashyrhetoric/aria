@@ -39,6 +39,7 @@ interface TemplateFields {
   name?: string
   pronouns?: Pronouns
   received: ReceivedState
+  
   participated_in: string
   targeted_skills: TargetedSkill[]
   accuracy_level: string // 25, 50, 75, 80, 90, 100 click to populate field
@@ -46,6 +47,10 @@ interface TemplateFields {
   prompt_level: PromptLevel
   prompt_types: PromptType[]
   prompt_subtypes: object
+}
+
+interface SessionActivity {
+
 }
 
 const UNDERSCORE = '___'
@@ -135,11 +140,11 @@ const template = (
       <span style={{ background: COLORS.pronoun }}>{`${upperFirst(
         pronouns.he
       )}`}</span>
-      <span>participated in</span>
+      {/* <span>participated in</span> */}
       <span
         style={{ background: COLORS.participated_in }}
       >{`${participated_in}`}</span>
-      <span>to increase </span>
+      <span>to increase</span>
       <span style={{ background: COLORS.pronoun }}>{`${pronouns.his} `}</span>
       <span
         style={{ background: COLORS.targeted_skills }}
@@ -332,7 +337,12 @@ export default function ReportWriter() {
                 light
                 id="targeted_skills"
                 titleText="Targeted Skills"
-                label="Targeted skills"
+                label={
+                  (formState &&
+                    formState.targeted_skills &&
+                    formState.targeted_skills.join(', ')) ||
+                  'Targeted skills'
+                }
                 items={TARGETED_SKILLS}
                 itemToString={i => i}
                 style={{ width: '100%' }}
@@ -343,6 +353,36 @@ export default function ReportWriter() {
                   })
                 }
               />
+            </div>
+            <div style={{ marginBottom: '10px' }} />
+            <div style={{ paddingLeft: '1rem' }}>
+              {formState &&
+                formState.targeted_skills &&
+                formState.targeted_skills.length > 0 &&
+                formState.targeted_skills.map(skill => (
+                  <>
+                    <TextInput
+                      light
+                      id={`targeted_skills-${skill}`}
+                      labelText={`${upperFirst(skill)} skills (optional)`}
+                      value={
+                        formState &&
+                        formState.targeted_skills &&
+                        formState.targeted_skills[skill]
+                      }
+                      onChange={e => {
+                        setFormState({
+                          ...formState,
+                          targeted_skills: {
+                            ...formState.targeted_skills,
+                            [skill]: e.selectedItems,
+                          },
+                        })
+                      }}
+                    />
+                    <div style={{ marginBottom: '20px' }} />
+                  </>
+                ))}
             </div>
             <div style={{ marginBottom: '10px' }} />
 
