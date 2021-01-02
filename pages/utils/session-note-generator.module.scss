@@ -1,9 +1,7 @@
 .container {
   display: flex;
   flex-flow: row wrap;
-  justify-content: space-around;
-
-  padding: 2rem;
+  justify-content: flex-start;
 }
 
 .colorContainer {
@@ -16,16 +14,18 @@
     width: 100%;
   }
   :global(.bx--fieldset) {
-    margin-bottom: none;
+    margin-bottom: 0;
   }
   $_color-blob-size: 10px;
   > div:first-child {
     position: absolute;
-    width: 570px;
+    display: flex;
+    align-items: center;
+    width: 104%;
+    right: -2%;
     height: 100%;
     z-index: -1;
     opacity: 0.3;
-    left: -10px;
     top: 3px;
     border-radius: 3px;
 
@@ -52,13 +52,13 @@
   font-size: 24px;
   line-height: 50px;
   span {
-    display: inline-flex;
-    justify-content: center;
-    align-items: center;
-    height: 38px;
+    display: inline;
     padding: 6px;
     border-radius: 2px;
     margin-right: 4px;
+    &.autoHeight {
+      height: auto;
+    }
   }
 }
 
@@ -69,14 +69,23 @@
     background: none !important;
   }
 }
+
+.left,
+.right {
+  width: 50%;
+}
 .left {
+  padding: 2rem;
+  padding-left: 4rem;
   h2 {
     margin-bottom: 2rem;
   }
 }
 
 .right {
-  position: relative;
+  position: fixed;
+  right: 0;
+  padding: 2rem;
   h2 {
     margin-bottom: 2rem;
   }

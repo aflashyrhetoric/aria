@@ -157,7 +157,12 @@ const template = (
         style={{ background: COLORS.prompt_level }}
       >{`${prompt_level}%`}</span>
       <span>prompting and </span>
-      <span style={{ background: COLORS.cuesString }}>{cuesString}.</span>
+      <span
+        className={styles.autoHeight}
+        style={{ background: COLORS.cuesString }}
+      >
+        {cuesString}.
+      </span>
     </p>,
     `${name === '' ? 'Student' : name} was received ${received}. ${upperFirst(
       pronouns.he
@@ -229,7 +234,7 @@ export default function ReportWriter() {
             </div>
           </div>
 
-          <Form style={{ width: '550px' }}>
+          <Form style={{ width: '100%' }}>
             <div className={styles.colorContainer}>
               <div
                 style={{
@@ -324,6 +329,7 @@ export default function ReportWriter() {
                 }}
               ></div>
               <MultiSelect
+                light
                 id="targeted_skills"
                 titleText="Targeted Skills"
                 label="Targeted skills"
@@ -366,6 +372,7 @@ export default function ReportWriter() {
                 }}
               ></div>
               <TextInput
+                light
                 id="accuracy_level"
                 type="text"
                 size="sm"
@@ -387,6 +394,7 @@ export default function ReportWriter() {
                 }}
               ></div>
               <Select
+                light
                 id="prompt_level"
                 labelText="Prompt Level"
                 value={formState && formState.prompt_level}
@@ -412,6 +420,7 @@ export default function ReportWriter() {
                 }}
               ></div>
               <MultiSelect
+                light
                 id="prompt_types"
                 titleText="Prompt Type(s)"
                 label={
@@ -427,7 +436,7 @@ export default function ReportWriter() {
                 }
               />
             </div>
-            <div style={{ marginBottom: '10px' }} />
+            <div style={{ marginBottom: '20px' }} />
 
             <div style={{ paddingLeft: '1rem' }}>
               {formState &&
@@ -436,6 +445,7 @@ export default function ReportWriter() {
                 formState.prompt_types.map(pt => (
                   <>
                     <MultiSelect
+                      light
                       id="prompt_types"
                       titleText={`${upperFirst(pt)} prompts (optional)`}
                       label={
