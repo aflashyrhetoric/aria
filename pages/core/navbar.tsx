@@ -14,7 +14,7 @@ interface NavbarProps {
 const Navbar: React.FC<NavbarProps> = (props: NavbarProps) => {
   return (
     <Header aria-label="IBM Platform Name">
-      <HeaderName href="#" prefix="SLP">
+      <HeaderName href="#" prefix="Aria">
         [ToolKit]
       </HeaderName>
       <HeaderGlobalBar>

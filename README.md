@@ -14,13 +14,13 @@
  
  ### Initial setup
 1. Create a user named `ko` for postgres with `createuser ko`
-2. Create a database named `slp-backend` with `createdb slp-backend`
+2. Create a database named `aria` with `createdb aria`
 
 ### Getting data
 - Initial tables have to be created via raw SQL. We do not yet have SQL migration files or a migration solution.
 
 ### Steps
-- For now, open `psql` (or `psql -d slp-backend`) and run whatever SQL files we do have to generate the tables
+- For now, open `psql` (or `psql -d aria`) and run whatever SQL files we do have to generate the tables
 - For now, just add a few fakey records using TablePlus or Postico or whatever
 
 ## Future roadmap ideas:
