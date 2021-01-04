@@ -24,7 +24,7 @@ import {
   TARGETED_SKILLS,
   PRONOUNS,
   Pronouns,
-} from '../types'
+} from '../../core/types'
 
 const styles = require('./report-writer.module.scss')
 
