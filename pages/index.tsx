@@ -1,5 +1,4 @@
 import Head from 'next/head'
-import Link from 'next/Link'
 import { useState, useEffect } from 'react'
 import { getAllUsers } from './api/api-helpers'
 import { User } from '.prisma/client'
@@ -25,7 +24,7 @@ export default function Home() {
       <main>
         {users.length > 0 && (
           <>
-            {users.map((u) => (
+            {users.map(u => (
               <ul>
                 <li>Name: {u.name}</li>
                 <li>Email: {u.email}</li>
