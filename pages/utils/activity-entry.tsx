@@ -27,14 +27,12 @@ const ActivityEntry: React.FC<ActivityEntryProps> = ({
   formState = {} as SessionActivity,
   setFormState,
 }: ActivityEntryProps) => {
-  const [activity, setActivity] = useState(formState)
-
   return (
     <div className={styles.activityEntry} style={{ padding: '0.5rem' }}>
       <div className={styles.colorContainer}>
         <div
           style={{
-            background: COLORS.participated_in,
+            background: COLORS.activity_name,
           }}
         ></div>
         <TextInput
@@ -43,12 +41,12 @@ const ActivityEntry: React.FC<ActivityEntryProps> = ({
           type="text"
           size="sm"
           labelText="Activity Name"
-          placeholder="Crossword puzzles"
-          value={activity && activity.participated_in}
+          placeholder="repeated /r/ sounds"
+          value={formState && formState.activity_name}
           onChange={e =>
             setFormState({
-              ...activity,
-              participated_in: e.target.value,
+              ...formState,
+              activity_name: e.target.value,
             })
           }
         />
@@ -65,9 +63,9 @@ const ActivityEntry: React.FC<ActivityEntryProps> = ({
           id="targeted_skills"
           titleText="Targeted Skills"
           label={
-            (activity &&
-              activity.targeted_skills &&
-              activity.targeted_skills.join(', ')) ||
+            (formState &&
+              formState.targeted_skills &&
+              formState.targeted_skills.join(', ')) ||
             'Targeted skills'
           }
           items={TARGETED_SKILLS}
@@ -75,7 +73,7 @@ const ActivityEntry: React.FC<ActivityEntryProps> = ({
           style={{ width: '100%' }}
           onChange={e =>
             setFormState({
-              ...activity,
+              ...formState,
               targeted_skills: e.selectedItems,
             })
           }
@@ -83,25 +81,25 @@ const ActivityEntry: React.FC<ActivityEntryProps> = ({
       </div>
       <div style={{ marginBottom: '10px' }} />
       <div style={{ paddingLeft: '1rem' }}>
-        {activity &&
-          activity.targeted_skills &&
-          activity.targeted_skills.length > 0 &&
-          activity.targeted_skills.map(skill => (
+        {formState &&
+          formState.targeted_skills &&
+          formState.targeted_skills.length > 0 &&
+          formState.targeted_skills.map(skill => (
             <>
               <TextInput
                 light
                 id={`targeted_skills-${skill}`}
                 labelText={`${upperFirst(skill)} skills (optional)`}
                 value={
-                  activity &&
-                  activity.targeted_skills &&
-                  activity.targeted_skills[skill]
+                  formState &&
+                  formState.targeted_skills &&
+                  formState.targeted_skills[skill]
                 }
                 onChange={e => {
                   setFormState({
-                    ...activity,
+                    ...formState,
                     targeted_skills: {
-                      ...activity.targeted_skills,
+                      ...formState.targeted_skills,
                       [skill]: e.selectedItems,
                     },
                   })
@@ -129,7 +127,7 @@ const ActivityEntry: React.FC<ActivityEntryProps> = ({
             size="sm"
             kind="secondary"
             onClick={e =>
-              setFormState({ ...activity, accuracy_level: `${pc}` })
+              setFormState({ ...formState, accuracy_level: `${pc}` })
             }
           >
             {pc}%
@@ -150,11 +148,11 @@ const ActivityEntry: React.FC<ActivityEntryProps> = ({
           size="sm"
           labelText="Accuracy Level (omit the % symbol)"
           placeholder="25"
-          value={activity && activity.accuracy_level}
+          value={formState && formState.accuracy_level}
           onChange={e => {
             let value = e.target.value
             value = value.replaceAll(/%/g, '')
-            setFormState({ ...activity, accuracy_level: value })
+            setFormState({ ...formState, accuracy_level: value })
           }}
         />
       </div>
@@ -169,9 +167,9 @@ const ActivityEntry: React.FC<ActivityEntryProps> = ({
           light
           id="prompt_level"
           labelText="Prompt Level"
-          value={activity && activity.prompt_level}
+          value={formState && formState.prompt_level}
           onChange={e =>
-            setFormState({ ...activity, prompt_level: e.target.value })
+            setFormState({ ...formState, prompt_level: e.target.value })
           }
         >
           <SelectItem value="" text={'Select a prompt level'} />
@@ -196,49 +194,48 @@ const ActivityEntry: React.FC<ActivityEntryProps> = ({
           id="prompt_types"
           titleText="Prompt Type(s)"
           label={
-            (activity &&
-              activity.prompt_types &&
-              activity.prompt_types.join(', ')) ||
+            // (formState && formState.prompts && formState.prompts.join(', ')) ||
             'Prompt Type'
           }
           items={PROMPT_TYPES}
           itemToString={i => i}
-          onChange={e =>
+          onChange={e => {
+            console.log(formState, e.selectedItems)
             setFormState({
-              ...activity,
-              prompt_types: e.selectedItems,
+              ...formState,
+              prompts: e.selectedItems,
             })
-          }
+          }}
         />
       </div>
       <div style={{ marginBottom: '20px' }} />
 
       <div style={{ marginLeft: '1rem' }}>
-        {activity &&
-          activity.prompt_types &&
-          activity.prompt_types.length > 0 &&
-          activity.prompt_types.map(pt => (
+        {formState &&
+          formState.prompts &&
+          formState.prompts.length > 0 &&
+          formState.prompts.map((pt, index) => (
             <>
               <MultiSelect
                 light
-                id="prompt_types"
+                id="prompts"
                 titleText={`${upperFirst(pt)} prompts (optional)`}
                 label={
-                  (activity &&
-                    activity.prompt_subtypes &&
-                    activity.prompt_subtypes[pt] &&
-                    activity.prompt_subtypes[pt].join(', ')) ||
+                  (pt &&
+                    pt.specific_prompts &&
+                    pt.specific_prompts.length > 0 &&
+                    pt.specific_prompts.join(', ')) ||
                   'Select..'
                 }
-                items={PROMPT_TYPE_SUBTYPE_MAP[pt]}
+                items={pt.specific_prompts}
                 itemToString={i => i}
                 onChange={e => {
+                  let updated = formState.prompts
+                  updated[index] = e.selectedItems
+
                   setFormState({
-                    ...activity,
-                    prompt_subtypes: {
-                      ...activity.prompt_subtypes,
-                      [pt]: e.selectedItems,
-                    },
+                    ...formState,
+                    prompts: [...formState.prompts],
                   })
                 }}
               />

@@ -51,6 +51,11 @@ export enum PromptType {
   Gestural = 'gestural',
 }
 
+export interface PromptShape {
+  name: PromptType
+  specific_prompts?: string[]
+}
+
 export const PROMPT_TYPES = [
   PromptType.Verbal,
   PromptType.Phonetic,
@@ -102,11 +107,11 @@ export const PRONOUNS = {
 export enum PromptSubtype {}
 
 export interface SessionActivity {
-  participated_in: string
+  id?: number
+  activity_name: string
   targeted_skills: TargetedSkill[]
   accuracy_level: string // 25, 50, 75, 80, 90, 100 click to populate field
 
   prompt_level: PromptLevel
-  prompt_types: PromptType[]
-  prompt_subtypes: object
+  prompts: PromptShape[]
 }

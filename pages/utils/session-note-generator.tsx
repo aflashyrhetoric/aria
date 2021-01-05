@@ -19,6 +19,10 @@ import {
   PRONOUNS,
   Pronouns,
   SessionActivity,
+  PROMPT_TYPES,
+  PROMPT_LEVELS,
+  PromptLevel,
+  PromptShape,
 } from './types'
 
 import { COLORS } from './shared'
@@ -37,40 +41,34 @@ interface TemplateFields {
 
 const UNDERSCORE = '___'
 
-const buildCuesString = (types, subtypes: object) => {
-  const withoutSubtypes = types.filter(
-    type => !Object.keys(subtypes).includes(type)
-  )
-
-  const withSubtypes = Object.entries(subtypes).map(entry => {
-    const [prompt_type, prompt_subtypes] = entry
-    return `${prompt_type} cues (such as ${prompt_subtypes.join(', ')})`
-  })
-
-  return [...withoutSubtypes, ...withSubtypes].join(', ')
+const buildCuesString = (prompts: PromptShape[]) => {
+  return 'hi'
+  return prompts.reduce((acc, currentPrompt) => {
+    if (currentPrompt.specific_prompts.length === 0) {
+      return `${currentPrompt.name} cues, ${acc}`
+    }
+    return `${
+      currentPrompt.name
+    } cues (such as ${currentPrompt.specific_prompts.join(', ')})`
+  }, '')
 }
 
-const template = (
-  {
-    name = 'Student',
-    pronouns = PRONOUNS.they,
-    received = ReceivedState.ENGAGED,
-
-    activities = [],
-
-    participated_in = UNDERSCORE,
-    targeted_skills = [UNDERSCORE],
-    accuracy_level = UNDERSCORE, // TODO ? Pre-populate later based on previous sessions accuracy_level
-    prompt_level = UNDERSCORE,
-    prompt_types = [],
-    prompt_subtypes = {},
-  },
-  colorize
+const activityString = (
+  pronouns = PRONOUNS.they,
+  activity: SessionActivity
 ) => {
-  const cuesString =
-    Object.keys(prompt_subtypes).length === 0
-      ? `${prompt_types.join(', ')} cues`
-      : buildCuesString(prompt_types, prompt_subtypes)
+  const {
+    targeted_skills = [UNDERSCORE],
+    accuracy_level = UNDERSCORE,
+    prompt_level = PromptLevel.Minimal,
+    prompts = [],
+    activity_name = UNDERSCORE,
+  } = activity
+
+  // const cuesString =
+  //   Object.keys(prompt_subtypes).length === 0
+  //     ? `${prompt_types.join(', ')} cues`
+  //     : buildCuesString(prompt_types, prompt_subtypes)
 
   /* 
 
@@ -84,30 +82,19 @@ const template = (
   
   */
 
-  // Return the populated template data
-
-  return [
-    <p
-      className={`${styles.cuesString} ${
-        !colorize && styles.disableColorization
-      }`}
-    >
-      <span style={{ background: COLORS.name }}>{`${
-        name === '' ? 'Student' : name
-      }`}</span>
-      <span>was received</span>
-      <span style={{ background: COLORS.received }}>{`${received}. `}</span>
+  return (
+    <>
       <span style={{ background: COLORS.pronoun }}>{`${upperFirst(
         pronouns.he
       )}`}</span>
       <span
-        style={{ background: COLORS.participated_in }}
-      >{`${participated_in}`}</span>
+        style={{ background: COLORS.activity_name }}
+      >{`${activity_name}`}</span>
       <span>to increase</span>
       <span style={{ background: COLORS.pronoun }}>{`${pronouns.his} `}</span>
-      <span
-        style={{ background: COLORS.targeted_skills }}
-      >{`${targeted_skills.join(', ')} `}</span>
+      <span style={{ background: COLORS.targeted_skills }}>{`${(
+        targeted_skills || []
+      ).join(', ')} `}</span>
       <span>abilities. </span>
       <span style={{ background: COLORS.pronoun }}>{`${upperFirst(
         pronouns.he
@@ -119,34 +106,51 @@ const template = (
       <span>accuracy provided</span>
       <span
         style={{ background: COLORS.prompt_level }}
-      >{`${prompt_level}%`}</span>
+      >{`${prompt_level}`}</span>
       <span>prompting and </span>
       <span
         className={styles.autoHeight}
         style={{ background: COLORS.cuesString }}
       >
-        {cuesString}.
+        {buildCuesString(prompts)}.
       </span>
-    </p>,
-    `${
-      name === '' ? 'Student' : name
-    } was received ${received}. ${activities.map(a => {
-      return `${upperFirst(
-        pronouns.he
-      )} participated in ${participated_in} to increase ${
-        pronouns.his
-      } ${targeted_skills.join(', ')}  abilities. ${upperFirst(
-        pronouns.he
-      )} responded with ${accuracy_level}% accuracy provided ${prompt_level}% prompting and ${cuesString} prompting and ${cuesString}.`
-    })}`,
-  ]
+    </>
+  )
+}
+
+const getTemplate = (
+  {
+    name = 'Student',
+    pronouns = PRONOUNS.they,
+    received = ReceivedState.ENGAGED,
+
+    activities = [],
+  },
+
+  colorize: Boolean = true
+): JSX.Element => {
+  return (
+    <p
+      className={`${styles.cuesString} ${
+        !colorize && styles.disableColorization
+      }`}
+    >
+      <span style={{ background: COLORS.name }}>{`${
+        name === '' ? 'Student' : name
+      }`}</span>
+      <span>was received</span>
+      <span style={{ background: COLORS.received }}>{`${received}. `}</span>
+      {activities.map(activity => activityString(pronouns, activity))}
+    </p>
+  )
 }
 
 export default function SessionNoteGenerator() {
   const [formState, setFormState] = useState<TemplateFields>(
     {} as TemplateFields
   )
-  const [output, setOutput] = useState(null)
+  const [template, setTemplate] = useState<JSX.Element>(null)
+  const [output, setOutput] = useState('')
   const [copied, setCopied] = useState(false)
   const [colorize, setColorize] = useState(true)
 
@@ -159,7 +163,8 @@ export default function SessionNoteGenerator() {
   }, [copied])
 
   useEffect(() => {
-    setOutput(template(formState, colorize))
+    setTemplate(getTemplate(formState, colorize))
+    // setCopied(formState)
   }, [formState])
 
   return (
@@ -265,11 +270,7 @@ export default function SessionNoteGenerator() {
                     let updated = formState.activities
                     updated[index] = activity
 
-                    // activities; [a,b,c] 
-
-                    setFormState({ ...formState, activities: 
-                      updated
-                     })
+                    setFormState({ ...formState, activities: updated })
                   }}
                 />
               ))}
@@ -292,9 +293,10 @@ export default function SessionNoteGenerator() {
                 style={{ cursor: 'pointer' }}
                 color="gray"
                 onClick={() => {
+                  let arr = formState.activities || []
                   setFormState({
                     ...formState,
-                    activities: [{} as SessionActivity],
+                    activities: [...arr, { id: arr.length } as SessionActivity],
                   })
                 }}
               />
@@ -334,7 +336,7 @@ export default function SessionNoteGenerator() {
             }
             onCopy={() => setCopied(true)}
           >
-            <p className={styles.output}>{output && output[0]}</p>
+            <p className={styles.output}>{template}</p>
           </CopyToClipboard>
         </div>
       </div>
