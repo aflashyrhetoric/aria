@@ -15,6 +15,7 @@ import {
   TARGETED_SKILLS,
 } from './types'
 import SpecificPromptEntry from './SpecificPromptEntry'
+import SpecificSkillEntry from './SpecificSkillEntry'
 
 const styles = require('./session-note-generator.module.scss')
 
@@ -85,28 +86,18 @@ const ActivityEntry: React.FC<ActivityEntryProps> = ({
           activity.targeted_skills &&
           activity.targeted_skills.length > 0 &&
           activity.targeted_skills.map(skill => (
-            <>
-              <TextInput
-                light
-                id={`targeted_skills-${skill}`}
-                labelText={`${upperFirst(skill)} skills (optional)`}
-                value={
-                  activity &&
-                  activity.targeted_skills &&
-                  activity.targeted_skills[skill]
-                }
-                onChange={e => {
-                  setFormState({
-                    ...activity,
-                    targeted_skills: {
-                      ...activity.targeted_skills,
-                      [skill]: e.selectedItems,
-                    },
-                  })
-                }}
-              />
-              <div style={{ marginBottom: '20px' }} />
-            </>
+            <SpecificSkillEntry
+              skill={skill}
+              setFormState={(skillDetails: string) => {
+                setFormState({
+                  ...activity,
+                  targeted_skill_details: {
+                    ...activity.targeted_skill_details,
+                    [skill]: skillDetails,
+                  },
+                })
+              }}
+            />
           ))}
       </div>
       <div style={{ marginBottom: '10px' }} />

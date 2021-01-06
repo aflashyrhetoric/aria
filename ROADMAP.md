@@ -1,5 +1,17 @@
 # ROADMAP
 
+
+## KEY TWEAKS (todo: convert to stories on Clubhouse):
+
+Adapt model to use:
+  Session:
+    - Activity
+      - Goal(s)
+        - AccuracyLevel 
+        - Targeted Skill
+        - PromptingLevel 
+    - Cues 
+      - Specific Cues/Prompts
 ## Polish Ideas:
 - add last `and`
 - fix scrolling / increase page height

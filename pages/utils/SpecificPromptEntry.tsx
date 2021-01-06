@@ -17,7 +17,7 @@ const SpecificPromptEntry: React.FC<SpecificPromptEntryProps> = ({
       <MultiSelect
         light
         id="prompts"
-        titleText={`${upperFirst(prompt)} prompts (optional)`}
+        titleText={`${upperFirst(prompt)} cues (optional)`}
         label={'Select..'}
         items={PROMPT_TYPE_SUBTYPE_MAP[prompt]}
         itemToString={i => i}

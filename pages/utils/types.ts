@@ -110,6 +110,7 @@ export interface SessionActivity {
   id?: number
   activity_name: string
   targeted_skills: TargetedSkill[]
+  targeted_skill_details: object
   accuracy_level: string // 25, 50, 75, 80, 90, 100 click to populate field
 
   prompt_level: PromptLevel
