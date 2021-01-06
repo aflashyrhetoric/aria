@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { upperFirst } from 'lodash'
 import {
   TextInput,
@@ -11,20 +11,20 @@ import { COLORS } from './shared'
 import {
   PROMPT_LEVELS,
   PROMPT_TYPES,
-  PROMPT_TYPE_SUBTYPE_MAP,
   SessionActivity,
   TARGETED_SKILLS,
 } from './types'
+import SpecificPromptEntry from './SpecificPromptEntry'
 
 const styles = require('./session-note-generator.module.scss')
 
 interface ActivityEntryProps {
-  formState: SessionActivity
+  activity: SessionActivity
   setFormState: Function
 }
 
 const ActivityEntry: React.FC<ActivityEntryProps> = ({
-  formState = {} as SessionActivity,
+  activity = {} as SessionActivity,
   setFormState,
 }: ActivityEntryProps) => {
   return (
@@ -42,10 +42,10 @@ const ActivityEntry: React.FC<ActivityEntryProps> = ({
           size="sm"
           labelText="Activity Name"
           placeholder="repeated /r/ sounds"
-          value={formState && formState.activity_name}
+          value={activity && activity.activity_name}
           onChange={e =>
             setFormState({
-              ...formState,
+              ...activity,
               activity_name: e.target.value,
             })
           }
@@ -63,9 +63,9 @@ const ActivityEntry: React.FC<ActivityEntryProps> = ({
           id="targeted_skills"
           titleText="Targeted Skills"
           label={
-            (formState &&
-              formState.targeted_skills &&
-              formState.targeted_skills.join(', ')) ||
+            (activity &&
+              activity.targeted_skills &&
+              activity.targeted_skills.join(', ')) ||
             'Targeted skills'
           }
           items={TARGETED_SKILLS}
@@ -73,7 +73,7 @@ const ActivityEntry: React.FC<ActivityEntryProps> = ({
           style={{ width: '100%' }}
           onChange={e =>
             setFormState({
-              ...formState,
+              ...activity,
               targeted_skills: e.selectedItems,
             })
           }
@@ -81,25 +81,25 @@ const ActivityEntry: React.FC<ActivityEntryProps> = ({
       </div>
       <div style={{ marginBottom: '10px' }} />
       <div style={{ paddingLeft: '1rem' }}>
-        {formState &&
-          formState.targeted_skills &&
-          formState.targeted_skills.length > 0 &&
-          formState.targeted_skills.map(skill => (
+        {activity &&
+          activity.targeted_skills &&
+          activity.targeted_skills.length > 0 &&
+          activity.targeted_skills.map(skill => (
             <>
               <TextInput
                 light
                 id={`targeted_skills-${skill}`}
                 labelText={`${upperFirst(skill)} skills (optional)`}
                 value={
-                  formState &&
-                  formState.targeted_skills &&
-                  formState.targeted_skills[skill]
+                  activity &&
+                  activity.targeted_skills &&
+                  activity.targeted_skills[skill]
                 }
                 onChange={e => {
                   setFormState({
-                    ...formState,
+                    ...activity,
                     targeted_skills: {
-                      ...formState.targeted_skills,
+                      ...activity.targeted_skills,
                       [skill]: e.selectedItems,
                     },
                   })
@@ -127,7 +127,7 @@ const ActivityEntry: React.FC<ActivityEntryProps> = ({
             size="sm"
             kind="secondary"
             onClick={e =>
-              setFormState({ ...formState, accuracy_level: `${pc}` })
+              setFormState({ ...activity, accuracy_level: `${pc}` })
             }
           >
             {pc}%
@@ -148,11 +148,11 @@ const ActivityEntry: React.FC<ActivityEntryProps> = ({
           size="sm"
           labelText="Accuracy Level (omit the % symbol)"
           placeholder="25"
-          value={formState && formState.accuracy_level}
+          value={activity && activity.accuracy_level}
           onChange={e => {
             let value = e.target.value
             value = value.replaceAll(/%/g, '')
-            setFormState({ ...formState, accuracy_level: value })
+            setFormState({ ...activity, accuracy_level: value })
           }}
         />
       </div>
@@ -167,9 +167,9 @@ const ActivityEntry: React.FC<ActivityEntryProps> = ({
           light
           id="prompt_level"
           labelText="Prompt Level"
-          value={formState && formState.prompt_level}
+          value={(activity && activity.prompt_level) || PROMPT_LEVELS[0]}
           onChange={e =>
-            setFormState({ ...formState, prompt_level: e.target.value })
+            setFormState({ ...activity, prompt_level: e.target.value })
           }
         >
           <SelectItem value="" text={'Select a prompt level'} />
@@ -194,15 +194,14 @@ const ActivityEntry: React.FC<ActivityEntryProps> = ({
           id="prompt_types"
           titleText="Prompt Type(s)"
           label={
-            // (formState && formState.prompts && formState.prompts.join(', ')) ||
+            // (activity && activity.prompts && activity.prompts.join(', ')) ||
             'Prompt Type'
           }
           items={PROMPT_TYPES}
           itemToString={i => i}
           onChange={e => {
-            console.log(formState, e.selectedItems)
             setFormState({
-              ...formState,
+              ...activity,
               prompts: e.selectedItems,
             })
           }}
@@ -211,35 +210,23 @@ const ActivityEntry: React.FC<ActivityEntryProps> = ({
       <div style={{ marginBottom: '20px' }} />
 
       <div style={{ marginLeft: '1rem' }}>
-        {formState &&
-          formState.prompts &&
-          formState.prompts.length > 0 &&
-          formState.prompts.map((pt, index) => (
+        {activity &&
+          activity.prompts &&
+          activity.prompts.length > 0 &&
+          activity.prompts.map((pt, index) => (
             <>
-              <MultiSelect
-                light
-                id="prompts"
-                titleText={`${upperFirst(pt)} prompts (optional)`}
-                label={
-                  (pt &&
-                    pt.specific_prompts &&
-                    pt.specific_prompts.length > 0 &&
-                    pt.specific_prompts.join(', ')) ||
-                  'Select..'
-                }
-                items={pt.specific_prompts}
-                itemToString={i => i}
-                onChange={e => {
-                  let updated = formState.prompts
-                  updated[index] = e.selectedItems
-
+              <SpecificPromptEntry
+                prompt={pt}
+                setFormState={specific_prompts => {
                   setFormState({
-                    ...formState,
-                    prompts: [...formState.prompts],
+                    ...activity,
+                    specific_prompts: {
+                      ...activity.specific_prompts,
+                      [pt]: specific_prompts,
+                    },
                   })
                 }}
               />
-              <div style={{ marginBottom: '20px' }} />
             </>
           ))}
       </div>

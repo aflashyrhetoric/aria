@@ -113,5 +113,6 @@ export interface SessionActivity {
   accuracy_level: string // 25, 50, 75, 80, 90, 100 click to populate field
 
   prompt_level: PromptLevel
-  prompts: PromptShape[]
+  prompts: PromptType[]
+  specific_prompts: object
 }

@@ -19,10 +19,10 @@ import {
   PRONOUNS,
   Pronouns,
   SessionActivity,
-  PROMPT_TYPES,
-  PROMPT_LEVELS,
   PromptLevel,
   PromptShape,
+  PromptType,
+  PROMPT_TYPE_SUBTYPE_MAP,
 } from './types'
 
 import { COLORS } from './shared'
@@ -41,16 +41,21 @@ interface TemplateFields {
 
 const UNDERSCORE = '___'
 
-const buildCuesString = (prompts: PromptShape[]) => {
-  return 'hi'
-  return prompts.reduce((acc, currentPrompt) => {
-    if (currentPrompt.specific_prompts.length === 0) {
-      return `${currentPrompt.name} cues, ${acc}`
-    }
-    return `${
-      currentPrompt.name
-    } cues (such as ${currentPrompt.specific_prompts.join(', ')})`
-  }, '')
+const buildCuesString = (
+  prompts: PromptType[],
+  specific_prompts: object = {}
+) => {
+  return prompts
+    .reduce((acc, currentPrompt) => {
+      let specificPromptString = ''
+      if (specific_prompts[currentPrompt]) {
+        specificPromptString = specific_prompts[currentPrompt].join(', ')
+        return `${acc}, ${currentPrompt} cues (such as ${specificPromptString})`
+      } else {
+        return `${acc}, ${currentPrompt} cues`
+      }
+    }, '')
+    .substring(1)
 }
 
 const activityString = (
@@ -62,25 +67,9 @@ const activityString = (
     accuracy_level = UNDERSCORE,
     prompt_level = PromptLevel.Minimal,
     prompts = [],
+    specific_prompts = [],
     activity_name = UNDERSCORE,
   } = activity
-
-  // const cuesString =
-  //   Object.keys(prompt_subtypes).length === 0
-  //     ? `${prompt_types.join(', ')} cues`
-  //     : buildCuesString(prompt_types, prompt_subtypes)
-
-  /* 
-
-  if no subtype:
-
-  and gestural, phonetic cues.
- 
-  if subtype:
-
-  and gestural cues (such as x, y, z), phonetic cues
-  
-  */
 
   return (
     <>
@@ -107,12 +96,12 @@ const activityString = (
       <span
         style={{ background: COLORS.prompt_level }}
       >{`${prompt_level}`}</span>
-      <span>prompting and </span>
+      <span>prompting and</span>
       <span
         className={styles.autoHeight}
         style={{ background: COLORS.cuesString }}
       >
-        {buildCuesString(prompts)}.
+        {buildCuesString(prompts, specific_prompts)}.
       </span>
     </>
   )
@@ -265,12 +254,15 @@ export default function SessionNoteGenerator() {
               formState.activities &&
               formState.activities.map((activity, index) => (
                 <ActivityEntry
-                  formState={activity}
+                  activity={activity}
                   setFormState={activity => {
-                    let updated = formState.activities
-                    updated[index] = activity
+                    const updatedActivities = formState.activities
+                    updatedActivities[index] = activity
 
-                    setFormState({ ...formState, activities: updated })
+                    setFormState({
+                      ...formState,
+                      activities: updatedActivities,
+                    })
                   }}
                 />
               ))}
