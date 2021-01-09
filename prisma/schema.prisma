@@ -16,7 +16,7 @@ model User {
 }
 
 enum ContactRole {
-  PARENT_MOTHER
+  PARENT_MOther
   PARENT_FATHER
   TEACHER
   GUARDIAN
@@ -54,7 +54,7 @@ enum ProgressMade {
 
 enum SessionGoal {
   LANGUAGE
-  ARTICULATION
+  Articulation
   PHONOLOGY
 }
 

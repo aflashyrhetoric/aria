@@ -3,31 +3,31 @@ export enum ReceivedState {
   TIRED = 'tired',
   UPSET = 'upset',
 
-  OTHER = 'other',
+  Other = 'other',
 }
 
 export const RECEIVED_STATES = [
   ReceivedState.ENGAGED,
   ReceivedState.TIRED,
   ReceivedState.UPSET,
-  ReceivedState.OTHER,
+  ReceivedState.Other,
 ]
 
 // suffix all below with "abilities"
 export enum TargetedSkill {
-  RECEPTIVE_LANGUAGE = 'receptive language',
-  EXPRESSIVE_LANGUAGE = 'expressive language',
-  ARTICULATION = 'articulation',
-  PHONOLOGICAL = 'phonological',
-  OTHER = 'other',
+  ReceptiveLanguage = 'receptive language',
+  ExpressiveLanguage = 'expressive language',
+  Articulation = 'articulation',
+  Phonological = 'phonological',
+  Other = 'other',
 }
 
 export const TARGETED_SKILLS = [
-  TargetedSkill.RECEPTIVE_LANGUAGE,
-  TargetedSkill.EXPRESSIVE_LANGUAGE,
-  TargetedSkill.ARTICULATION,
-  TargetedSkill.PHONOLOGICAL,
-  TargetedSkill.OTHER,
+  TargetedSkill.ReceptiveLanguage,
+  TargetedSkill.ExpressiveLanguage,
+  TargetedSkill.Articulation,
+  TargetedSkill.Phonological,
+  TargetedSkill.Other,
 ]
 
 export enum PromptLevel {
@@ -103,17 +103,22 @@ export const PRONOUNS = {
   },
 }
 
-// TODO: verbal = ["x",y]
-export enum PromptSubtype {}
+export interface SessionGoal {
+  id?: number
+  description: string
+  accuracy_level: number
+  targeted_skills: TargetedSkill[]
+  prompt_level: PromptLevel
+  prompts: PromptType[]
+}
 
 export interface SessionActivity {
   id?: number
   activity_name: string
-  targeted_skills: TargetedSkill[]
   targeted_skill_details: object
   accuracy_level: string // 25, 50, 75, 80, 90, 100 click to populate field
 
-  prompt_level: PromptLevel
-  prompts: PromptType[]
+  goals: SessionGoal[]
+
   specific_prompts: object
 }
