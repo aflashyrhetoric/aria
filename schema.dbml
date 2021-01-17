@@ -1,0 +1,145 @@
+Table students {
+  id int [pk]
+  first_name string
+  last_name string
+  middle_name string
+  romanized_name string
+
+  dob datetime
+  grade int
+  diagnosis string
+  iep_annual_date datetime
+  classroom_setting string
+  mandate_id int [ref: > mandates.id]
+}
+
+Table iep_goals {
+  id int 
+  goal string
+}
+
+Enum ClassroomType {
+  self_contained
+  integrated_co_teaching
+  general_education
+}
+
+Table classes {
+  id int
+  type ClassroomType
+  grade_level int
+  subject string
+  teacher int [ref: > teachers.id]
+}
+
+Table mandates {
+  id int [pk]
+  sessions_per_week int // 2
+  duration int // 30
+}
+
+Table students_contacts {
+  student int [ref: > students.id]
+  contact int [ref: > contacts.id]
+}
+
+Table students_therapists {
+  student int [ref: > students.id]
+  therapist int [ref: > therapists.id]
+}
+
+Table students_classes {
+  student int [ref: > students.id]
+  class int [ref: > classes.id]
+}
+
+Table students_sessions {
+  student int [ref: > students.id]
+  session int [ref: > sessions.id]
+}
+
+
+Enum RelationshipType {
+  brother
+  sister
+  mother
+  father
+  aunt
+  uncle
+  guardian
+  godfather
+  godmother
+  other
+}
+
+Table contacts {
+  id int [pk]
+  first_name string 
+  last_name string
+  email string
+  phone int
+  secondary_phone int
+  
+  
+  relationship_type RelationshipType
+}
+
+Table teachers {
+  id int
+  first_name string
+  last_name string
+  title string // mr mrs
+  email string
+}
+
+Enum therapist_type {
+  occupational
+  speech_language_pathologist
+}
+
+Table therapists {
+  id int
+  type therapist_type
+  first_name string
+  last_name string
+}
+
+Enum ServiceDeliveryModel {
+  teletherapy
+  in_person
+}
+
+Enum ProgressAchieved {
+  MadeExpectedProgress
+  MadeNoProgress
+  RespondedPositivelyMadeNoProgress
+}
+
+
+Table sessions {
+  id int
+  starting_time datetime  
+  duration int
+  received_state string
+  sent_state string
+  service_delivery_model
+  progress_achieved ProgressAchieved
+}
+
+Table session_notes {
+  id int
+  session_id int [ref: > sessions.id]
+  subjective string
+  objective string
+  assessment string
+  plan string
+}
+
+Table goals {
+  skill string
+}
+
+Table annual_goals {
+  id int
+  
+}
