@@ -122,7 +122,7 @@ Table sessions {
   duration int
   received_state string
   sent_state string
-  service_delivery_model
+  service_delivery_model string
   progress_achieved ProgressAchieved
 }
 
